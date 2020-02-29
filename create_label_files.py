@@ -93,8 +93,8 @@ if __name__ == "__main__":
             print("transforms not computed, run compute_gt_poses.py first")
             continue
         
-        mesh = trimesh.load(folder + "fixed.ply")
-        mesh2 = trimesh.load(folder + "fixed.ply")
+        mesh = trimesh.load(folder + "mesh_result.ply")
+        mesh2 = trimesh.load(folder + "mesh_result.ply")
 
         Tform = mesh.apply_obb()
         
