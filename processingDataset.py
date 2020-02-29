@@ -7,19 +7,14 @@ import re
 import shutil
 
 target_base_path = "/home/labuser/repos/DenseFusion/datasets/tommaso/tommaso_preprocessed/"
-linemodPath = "LINEMOD/test3/"
+linemodPath = "LINEMOD/"
 
 #Read relevant data from csv regarding boxes
 boxList = pd.read_csv("annotations.csv",delimiter=";")
-relevantColumns = boxList.columns[2:6]
+boxCoordinates = boxList.columns[2:6]
 print(boxList.head())
 box = boxList.iloc[1]
 print(box)
-
-#Read relevant data regarding transformation between picture and object 
-local_directory =  linemodPath + "transforms/"
-
-objlist = [1]
 
 #Load Camera Intrinsics 
 with open("camera_parameters.yml","r") as camera_file:
@@ -28,6 +23,17 @@ with open("camera_parameters.yml","r") as camera_file:
 cam = {"cam_K": [camera_parameters['fx'], 0.0, camera_parameters['ppx'],\
         0.0, camera_parameters['fy'], camera_parameters['ppy'], \
         0.0, 0.0, 1.0], "depth_scale": camera_parameters['depth_scale']}
+
+#Find all object folders
+obj_dir = os.listdir(linemodPath)
+
+
+#Read relevant data regarding transformation between picture and object 
+local_directory =  linemodPath + "transforms/"
+
+objlist = [1]
+
+
 
 # camera_parameters = {'fx': intr.fx, 'fy': intr.fy,
 #                     'ppx': intr.ppx, 'ppy': intr.ppy,
@@ -52,7 +58,7 @@ for n in objlist:
         idx = file[:-4]
 
         #convert the list to numeric values
-        tmp = pd.to_numeric(boxList.loc[int(idx),relevantColumns])
+        tmp = pd.to_numeric(boxList.loc[int(idx),boxCoordinates])
         values = tmp.tolist()
         data = dict({"cam_R_m2c":curr[:3,:3].tolist(), "cam_t_m2c": curr[:3,3].tolist(), "obj_bb": values, "obj_id": 1})
         li.append(data)
