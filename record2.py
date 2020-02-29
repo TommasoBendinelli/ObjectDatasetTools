@@ -93,7 +93,7 @@ if __name__ == "__main__":
    
         # Visualize count down
 
-        if time.time() -T_start > 5:
+        if time.time() -T_start > 10:
             filecad= folder+"JPEGImages/%s.jpg" % FileName
             filedepth= folder+"depth/%s.png" % FileName
             cv2.imwrite(filecad,c)
