@@ -8,7 +8,7 @@ import sys
 
 o3d.utility.set_verbosity_level(o3d.utility.VerbosityLevel.Debug)
 
-pcd = o3d.io.read_point_cloud("closed_point_cloud.ply")
+pcd = o3d.io.read_point_cloud("cropped_3_experimental_True.ply")
 #o3d.visualization.draw_geometries([pcd])
 pcd = pcd.voxel_down_sample(voxel_size=0.001)
 pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(
@@ -38,4 +38,4 @@ mesh.remove_vertices_by_mask(vertices_to_remove)
 print(mesh)
 mesh.compute_vertex_normals()
 o3d.visualization.draw_geometries([mesh])
-o3d.io.write_triangle_mesh("saved_result.ply", mesh)
+o3d.io.write_triangle_mesh("mesh_result.ply", mesh)
