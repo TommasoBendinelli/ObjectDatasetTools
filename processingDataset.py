@@ -24,13 +24,15 @@ cam = {"cam_K": [camera_parameters['fx'], 0.0, camera_parameters['ppx'],\
         0.0, camera_parameters['fy'], camera_parameters['ppy'], \
         0.0, 0.0, 1.0], "depth_scale": camera_parameters['depth_scale']}
 
-#Find all object folders
-obj_dir = os.listdir(linemodPath)
+#Find all object folders and return the absolute path
+obj_dirs = os.listdir(linemodPath)
+obj_dirs = [linemodPath + obj_dir + "/" for obj_dir in obj_dirs ]
+
 
 #Read relevant data regarding transformation between picture and object 
-local_directory =  linemodPath + "transforms/"
+#local_directory =  linemodPath + "transforms/"
 
-objlist = [1]
+objlist = [1,2]
 
 
 
@@ -48,12 +50,15 @@ for n in objlist:
     #Create the yaml file as nested dictionary
     gt = {}
     info = {}
+    obj_dir = obj_dirs[n-1]
 
-    for file in sorted(os.listdir(local_directory)):
+    #Go through all transoformations file 
+    transform_dir =  obj_dir + "transforms/" 
+    for file in sorted(os.listdir(transform_dir)):
         #In case the are multiple object, each pose goes into a list 
         li = []
 
-        curr = np.load(local_directory + file)
+        curr = np.load(transform_dir + file)
         idx = file[:-4]
 
         #convert the list to numeric values
@@ -67,19 +72,19 @@ for n in objlist:
 
     #Open the train and test files and extract valuable information. Save it in the proper format.
     n_date = re.compile(r"\/([0-9]+)")
-    with open(linemodPath + "train.txt") as n:
+    with open(obj_dir + "train.txt") as n:
         n = n.read()
         results = re.findall(n_date,n)
 
-    with open(path + "train.txt", "w+") as traintxt:
+    with open(obj_dir + "train.txt", "w+") as traintxt:
         for num in results:
             traintxt.write("{}\n".format(num))
     
-    with open(linemodPath + "test.txt") as n:
+    with open(obj_dir + "test.txt") as n:
         n = n.read()
         results = re.findall(n_date,n)
 
-    with open(path + "test.txt", "w+") as traintxt:
+    with open(obj_dir + "test.txt", "w+") as traintxt:
         for num in results:
             traintxt.write("{}\n".format(num))
 
