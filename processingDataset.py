@@ -90,11 +90,12 @@ for n in objlist:
 
     #Copy the depth, mask and rgb folders in the right location
     try:
-        shutil.copytree(linemodPath + "JPEGImages",path + "rgb")
-        shutil.copytree(linemodPath + "mask",path + "mask")
-        shutil.copytree(linemodPath + "depth",path + "depth")
-    except: 
-        pass 
+        shutil.copytree(obj_dir + "JPEGImages",path + "rgb")
+        shutil.copytree(obj_dir + "mask",path + "mask")
+        shutil.copytree(obj_dir + "depth",path + "depth")
+    except Exception as e: 
+        print("Something went wrong with file {}".format(obj_dir))
+        print(e)
 
     
 
