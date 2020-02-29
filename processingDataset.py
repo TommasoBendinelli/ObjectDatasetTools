@@ -27,7 +27,6 @@ cam = {"cam_K": [camera_parameters['fx'], 0.0, camera_parameters['ppx'],\
 #Find all object folders
 obj_dir = os.listdir(linemodPath)
 
-
 #Read relevant data regarding transformation between picture and object 
 local_directory =  linemodPath + "transforms/"
 
