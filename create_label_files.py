@@ -67,7 +67,7 @@ if __name__ == "__main__":
         print_usage()
         exit()
 
-    
+    count = 0 
     for classlabel,folder in enumerate(folders):
         # print(folder[8:-1], "is assigned class label:", classlabel)
         print("%s is assigned class label %d." % (folder[8:-1],classlabel))
@@ -93,11 +93,14 @@ if __name__ == "__main__":
             print("transforms not computed, run compute_gt_poses.py first")
             continue
         
-        mesh = trimesh.load(folder + "registeredScene.ply")
+        mesh = trimesh.load(folder + "fixed.ply")
+        mesh2 = trimesh.load(folder + "fixed.ply")
 
         Tform = mesh.apply_obb()
         
         mesh.export(file_obj = folder + folder[8:-1] +".ply")
+
+
 
         points = mesh.bounding_box.vertices
         center = mesh.centroid
@@ -153,7 +156,12 @@ if __name__ == "__main__":
     
             _, contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                                               cv2.CHAIN_APPROX_SIMPLE)
-            cnt = max(contours, key=cv2.contourArea)
+            
+            try:
+                cnt = max(contours, key=cv2.contourArea)
+            except:
+                count = count + 1
+                pass 
     
             image_mask = np.zeros(img.shape[:2],dtype = np.uint8)
             cv2.drawContours(image_mask, [cnt], -1, 255, -1)
@@ -175,4 +183,4 @@ if __name__ == "__main__":
             message = str((max_y-min_y)/float(camera_intrinsics['height']))[:8]
             file.write(message)
             file.close()
-
+    print("Issues with {} images".format(count))
