@@ -14,7 +14,7 @@ Using librealsense SDK 2.0 with pyrealsense2 for SR300 and D series cameras
 # record for 40s after a 5s count down
 # or exit the recording earlier by pressing q
 
-RECORD_LENGTH = 60
+RECORD_LENGTH = 150
 
 import png
 import pyrealsense2 as rs
