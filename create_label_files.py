@@ -161,7 +161,7 @@ if __name__ == "__main__":
                 cnt = max(contours, key=cv2.contourArea)
             except:
                 count = count + 1
-                pass 
+                continue 
     
             image_mask = np.zeros(img.shape[:2],dtype = np.uint8)
             cv2.drawContours(image_mask, [cnt], -1, 255, -1)
