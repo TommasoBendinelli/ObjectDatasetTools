@@ -11,6 +11,7 @@ linemodPath = "LINEMOD/"
 
 #Read relevant data from csv regarding boxes
 boxList = pd.read_csv("annotations.csv",delimiter=";")
+Obj_boxList_group = boxList.groupby("Annotation tag")
 boxCoordinates = boxList.columns[2:6]
 print(boxList.head())
 box = boxList.iloc[1]
@@ -25,14 +26,13 @@ cam = {"cam_K": [camera_parameters['fx'], 0.0, camera_parameters['ppx'],\
         0.0, 0.0, 1.0], "depth_scale": camera_parameters['depth_scale']}
 
 #Find all object folders and return the absolute path
-obj_dirs = os.listdir(linemodPath)
-obj_dirs = [linemodPath + obj_dir + "/" for obj_dir in obj_dirs ]
+# obj_dirs = os.listdir(linemodPath)
+# obj_dirs = [linemodPath + obj_dir + "/" for obj_dir in obj_dirs ]
 
 
 #Read relevant data regarding transformation between picture and object 
 #local_directory =  linemodPath + "transforms/"
-
-objlist = [1,2]
+objlist = {1: "test3/", 2:"siemens4/", 3:"siemens5/"}
 
 
 
@@ -50,10 +50,10 @@ for n in objlist:
     #Create the yaml file as nested dictionary
     gt = {}
     info = {}
-    obj_dir = obj_dirs[n-1]
 
+    Obj_tool_fold = linemodPath + objlist[n]
     #Go through all transoformations file 
-    transform_dir =  obj_dir + "transforms/" 
+    transform_dir =  Obj_tool_fold + "transforms/" 
     for file in sorted(os.listdir(transform_dir)):
         #In case the are multiple object, each pose goes into a list 
         li = []
@@ -62,7 +62,8 @@ for n in objlist:
         idx = file[:-4]
 
         #convert the list to numeric values
-        tmp = pd.to_numeric(boxList.loc[int(idx),boxCoordinates])
+        columns = Obj_boxList_group.get_group(Obj_tool_fold[:-1]).reset_index(drop=True)
+        tmp = pd.to_numeric(columns.loc[int(idx),boxCoordinates])
         values = tmp.tolist()
         data = dict({"cam_R_m2c":curr[:3,:3].tolist(), "cam_t_m2c": curr[:3,3].tolist(), "obj_bb": values, "obj_id": 1})
         li.append(data)
@@ -72,29 +73,30 @@ for n in objlist:
 
     #Open the train and test files and extract valuable information. Save it in the proper format.
     n_date = re.compile(r"\/([0-9]+)")
-    with open(obj_dir + "train.txt") as n:
+    with open(Obj_tool_fold + "train.txt") as n:
         n = n.read()
         results = re.findall(n_date,n)
 
-    with open(obj_dir + "train.txt", "w+") as traintxt:
+    with open(path + "train.txt", "w+") as traintxt:
         for num in results:
             traintxt.write("{}\n".format(num))
     
-    with open(obj_dir + "test.txt") as n:
+    with open(Obj_tool_fold + "test.txt") as n:
         n = n.read()
         results = re.findall(n_date,n)
 
-    with open(obj_dir + "test.txt", "w+") as traintxt:
+    with open(path + "test.txt", "w+") as traintxt:
         for num in results:
             traintxt.write("{}\n".format(num))
 
     #Copy the depth, mask and rgb folders in the right location
     try:
-        shutil.copytree(obj_dir + "JPEGImages",path + "rgb")
-        shutil.copytree(obj_dir + "mask",path + "mask")
-        shutil.copytree(obj_dir + "depth",path + "depth")
+        shutil.copytree(Obj_tool_fold + "JPEGImages",path + "rgb")
+        shutil.copytree(Obj_tool_fold + "mask",path + "mask")
+        shutil.copytree(Obj_tool_fold + "depth",path + "depth")
+        print("Files copied: ".format(Obj_tool_fold))
     except Exception as e: 
-        print("Something went wrong with file {}".format(obj_dir))
+        print("Something went wrong with file {}".format(Obj_tool_fold))
         print(e)
 
     
