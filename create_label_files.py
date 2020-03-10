@@ -16,6 +16,7 @@ This script produces:
 import numpy as np
 from pykdtree.kdtree import KDTree
 import trimesh
+import copy
 import cv2
 import glob
 import os
@@ -96,8 +97,36 @@ if __name__ == "__main__":
         mesh = trimesh.load(folder + "mesh_result.ply")
         mesh2 = trimesh.load(folder + "mesh_result.ply")
 
-        Tform = mesh.apply_obb()
-        
+        #mesh_siemens2 = trimesh.load("LINEMOD/siemens2/" + "mesh_result.ply")
+        #mesh_siemens3 = trimesh.load("LINEMOD/siemens3/" + "mesh_result.ply")
+        mesh_truth = trimesh.load("LINEMOD/siemens.ply")
+        #target = mesh_truth.bounding_box_oriented.principal_inertia_transform
+        target = mesh_truth.principal_inertia_transform
+
+        #Tform_siemens2 = mesh_siemens2.apply_obb()
+        #Tform_siemens3 = mesh_siemens3.apply_obb()
+        tform_final = np.diag([1.,1.,1.,1.])
+        while True:
+            # traslation = mesh_truth.mass_properties['center_mass'] - mesh.mass_properties['center_mass']
+            # traslation_transf = np.diag([1.,1.,1.,1.])
+            # traslation_transf[3,0], traslation_transf[3,1], traslation_transf[3,2] = traslation[0], traslation[1], traslation[2]
+            #mesh.apply_transform(traslation_transf)
+            #source = mesh_truth.principal_inertia_transform
+            source = mesh.principal_inertia_transform
+            transformation = np.dot(np.linalg.inv(target),source)
+            mesh.apply_transform(transformation)
+            Tform = mesh.apply_obb()
+            #mesh.export("LINEMOD/siemens6/test.ply")
+            #test = copy.deepcopy(mesh)
+            #tform_final = np.dot(Tform, np.dot(transformation, (np.dot(-traslation_transf,tform_final))))
+            tform_final = np.dot(Tform, np.dot(transformation,tform_final))
+            #tform_final = np.dot(tform_final, np.dot(traslation_transf, (np.dot(transformation,Tform))))
+            if abs(sum(mesh_truth.mass_properties['center_mass'] - mesh.mass_properties['center_mass'])) < 0.00001:
+                break
+            
+
+
+
         mesh.export(file_obj = folder + folder[8:-1] +".ply")
 
 
@@ -116,7 +145,7 @@ if __name__ == "__main__":
 
         points_original = np.concatenate((np.array([[center[0],center[1],center[2]]]), points))
         points_original = trimesh.transformations.transform_points(points_original,
-                                                                   np.linalg.inv(Tform))
+                                                                   np.linalg.inv(tform_final))
                     
         projections = [[],[]]
         
@@ -132,7 +161,7 @@ if __name__ == "__main__":
             corners[:,0] = corners[:,0]/int(camera_intrinsics['width'])
             corners[:,1] = corners[:,1]/int(camera_intrinsics['height'])
 
-            T = np.dot(transform, np.linalg.inv(Tform))
+            T = np.dot(transform, np.linalg.inv(tform_final))
             mesh_copy.apply_transform(T)
             filename = path_transforms + "/"+ str(i*LABEL_INTERVAL)+".npy"
             np.save(filename, T)
@@ -184,3 +213,5 @@ if __name__ == "__main__":
             file.write(message)
             file.close()
     print("Issues with {} images".format(count))
+    os.rename(folder,sys.argv[1]+ "_ok/")
+
