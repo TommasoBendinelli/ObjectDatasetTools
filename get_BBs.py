@@ -8,7 +8,7 @@ import csv
 allinfo = []
 allinfo.append(["Filename","Annotation tag","Upper left corner X","Upper left corner Y","Lower right corner X","Lower right corner Y","Occluded"])
 writer = csv.writer(open("annotations.csv", "w"), delimiter=";")
-folders = glob.glob("LINEMOD/*/")
+folders = glob.glob("LINEMOD/*_ok/")
 print(folders)
 for folder in folders:
     classlabel = folder[:-1]

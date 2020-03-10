@@ -10,12 +10,12 @@ def distance(point_one, point_two):
 def max_distance(points):
     return max(distance(p1, p2) for p1, p2 in zip(points, points[1:]))
 
-folders = glob.glob("LINEMOD/*/")
+folders = glob.glob("LINEMOD/*_ok/")
 for classlabel,folder in enumerate(folders):
     try:
         print(folder)
 
-        mesh = trimesh.load(folder + folder[8:-1] +".ply")
+        mesh = trimesh.load(folder + folder[8:-4] +".ply")
         vertices = mesh.vertices
         maxD = max_distance(vertices.tolist())
         print("Max vertice distance is: %f m." % maxD)

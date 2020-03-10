@@ -12,7 +12,7 @@ import os
 from config.registrationParameters import *
 
 
-folders = glob.glob("LINEMOD/*/")
+folders = glob.glob("LINEMOD/*_ok/")
 for classlabel,folder in enumerate(folders):
     print(folder)
     try:
