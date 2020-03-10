@@ -1,6 +1,6 @@
 import open3d as o3d
 import numpy as np
-pcd = o3d.io.read_point_cloud("point_cloud/original/siemens5_original.ply")
+pcd = o3d.io.read_point_cloud("point_cloud/original/siemens2_original.ply")
 #o3d.visualization.draw_geometries_with_editing([pcd])
 plane_model, inliers = pcd.segment_plane(0.001,3,250)
 [a, b, c, d] = plane_model
@@ -17,10 +17,11 @@ inlier_cloud.paint_uniform_color([1.0, 0, 0])
 outlier_cloud = pcd.select_down_sample(inliers, invert=True)
 
 res = outlier_cloud + inlier_cloud
+print("K for entering in cropping mode \nc for saving")
 o3d.visualization.draw_geometries_with_editing([res])
 
 #Put here the pointcloud
-pcd = o3d.io.read_point_cloud("point_cloud/cropped/siemens5_cropped1.ply")
+pcd = o3d.io.read_point_cloud("point_cloud/cropped/siemens2_cropped1.ply")
 
 #Find the projection into the plane
 obj = np.asarray(pcd.points)
@@ -65,7 +66,7 @@ res = pl + pcd
 
 print("If the result is not what expected try to change the sign in boolcond")
 o3d.visualization.draw_geometries([res])
-o3d.io.write_point_cloud("point_cloud/segmented/siemens5_segmented.ply".format(experimental), res)
+o3d.io.write_point_cloud("point_cloud/segmented/siemens2_segmented.ply".format(experimental), res)
 
 
 #o3d.visualization.draw_geometries([pl])
