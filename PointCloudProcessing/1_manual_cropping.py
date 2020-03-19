@@ -11,6 +11,7 @@ print("   or use ctrl + left click for polygon selection")
 print("4) Press 'C' to get a selected geometry and to save it")
 print("5) Press 'F' to switch to freeview mode")
 
+print("Save me with this name:" +  sys.argv[1])
 pcd = o3d.io.read_point_cloud("point_cloud/original/" + sys.argv[1] + "_original.ply")
 print("Elaborating point cloud: " + sys.argv[0])
 o3d.visualization.draw_geometries_with_editing([pcd])
