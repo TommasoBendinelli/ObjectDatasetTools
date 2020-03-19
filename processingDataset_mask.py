@@ -72,7 +72,7 @@ for n in objlist:
           data = dict({"idx": int(str(l) + str(idx)), "obj_bb": values, "obj_id": n, "image_height": cam['height'], "image_width": cam['width']})
           box.append(data)
           try:
-              shutil.copy(ObjectDataTools_path + view_list[l] + "JPEGImages/" + idx + ".jpg",  path + "rgb/" + str(new_idx) + ".jpg" )
+              shutil.copy(ObjpytectDataTools_path + view_list[l] + "JPEGImages/" + idx + ".jpg",  path + "rgb/" + str(new_idx) + ".jpg" )
               shutil.copy(ObjectDataTools_path + view_list[l] + "mask/" + idx + ".png",  path + "mask/" + str(new_idx) + ".png" )
           except Exception as E:
               pass

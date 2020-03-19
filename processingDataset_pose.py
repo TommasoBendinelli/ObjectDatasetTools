@@ -13,6 +13,7 @@ linemodPath = "LINEMOD/"
 
 #Read relevant data from csv regarding boxes
 boxList = pd.read_csv("annotations.csv",delimiter=";")
+boxList.head()
 Obj_boxList_group = boxList.groupby("Annotation tag")
 boxCoordinates = boxList.columns[2:6]
 print(boxList.head())
@@ -68,7 +69,7 @@ for n in objlist:
         os.mkdir(rgb)
 
     for l in view_list:
-
+        no_Obj = []
         #Obj_tool_fold = linemodPath + objlist[n]
         #Go through all transoformations file 
         transform_dir =  view_list[l] + "transforms/" 
@@ -81,7 +82,15 @@ for n in objlist:
 
             #convert the list to numeric values
             columns = Obj_boxList_group.get_group(view_list[l][:-1]).reset_index(drop=True)
-            tmp = pd.to_numeric(columns.loc[int(retrieve),boxCoordinates])
+            new_index = columns["Filename"].str.extract(r"\/([0-9]+)")[0]
+            new_index = pd.to_numeric(new_index, errors='coerce')
+            columns = columns.set_index(new_index)
+            try: 
+                tmp = pd.to_numeric(columns.loc[int(retrieve),boxCoordinates])
+            except:
+                print("No object in picture: " + str(file[:-4]))
+                no_Obj.append(file[:-4])
+                continue
             idx =  str(l) + file[:-4]
             values = tmp.tolist()
             data = dict({"cam_R_m2c":curr[:3,:3].tolist(), "cam_t_m2c": curr[:3,3].tolist(), "obj_bb": values, "obj_id": 1})
@@ -107,12 +116,12 @@ for n in objlist:
         with open(view_list[l] + "train.txt") as train:
             train = train.read()
             train_instances = re.findall(n_date,train)
-            train_final.extend([str(l) + curr for curr in train_instances])
+            train_final.extend([str(l) + curr for curr in train_instances if curr not in no_Obj])
             
         with open(view_list[l] + "test.txt") as test:
             test = test.read()
             test_instances = re.findall(n_date,test)
-            test_final.extend([str(l) + curr for curr in test_instances])
+            test_final.extend([str(l) + curr for curr in test_instances if curr not in no_Obj])
         
         print("Processed: " + view_list[l])
 
@@ -128,9 +137,9 @@ for n in objlist:
 
 
     #Save json file
-    with open(path + "gt.yml", "w") as outfile:
+    with open(path + "gt.json", "w") as outfile:
         json.dump(gt,outfile)
     
-    with open(path + "info.yml", "w") as infofile:
+    with open(path + "info.json", "w") as infofile:
         json.dump(info,infofile)
 
