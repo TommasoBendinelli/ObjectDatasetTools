@@ -60,7 +60,7 @@ def demo_manual_registration():
     #source = source.sample_points_poisson_disk(2000)
     #print("point_cloud/cropped/" + sys.argv[1] + "_cropped1.ply")
     if sys.argv[2] == "1":
-        pcd = o3d.io.read_point_cloud("point_cloud/cropped/" + sys.argv[1] + "_cropped1.ply")
+        pcd = o3d.io.read_point_cloud("point_cloud/cropped/" + sys.argv[1] +  ".ply")
     else:
         pcd = o3d.io.read_point_cloud("point_cloud/augmented/backup"+sys.argv[1]+"best.ply")
     pcd = pcd.voxel_down_sample(voxel_size = 0.0005)
@@ -111,7 +111,7 @@ def demo_manual_registration():
         # cad_mesh.translate(-trasl)
         o3d.visualization.draw_geometries([cad_res, target])
         print("")
-        print("Do you like the result o you want to do it again?")
+        print("Do you like the result?")
         like = input('Please type Y or N')  
         if like == "Y":
             o3d.io.write_triangle_mesh("mesh/" + sys.argv[1] + ".ply", cad_res)
