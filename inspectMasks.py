@@ -71,7 +71,7 @@ def visualize(path):
 if __name__ == "__main__":
   
     if sys.argv[1] == "all":
-        folders = glob.glob("LINEMOD/*/")
+        folders = glob.glob("LINEMOD/*_ok/")
     elif sys.argv[1]+"/" in glob.glob("LINEMOD/*/"):
         folders = [sys.argv[1]+"/"]
     else:

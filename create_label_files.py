@@ -21,6 +21,7 @@ import cv2
 import glob
 import os
 import sys
+import random
 from tqdm import trange
 from scipy.optimize import minimize
 from config.registrationParameters import *
@@ -42,8 +43,8 @@ def compute_projection(points_3D,internal_calibration):
     points_3D = points_3D.T
     projections_2d = np.zeros((2, points_3D.shape[1]), dtype='float32')
     camera_projection = (internal_calibration).dot(points_3D)
-    projections_2d[0, :] = camera_projection[0, :]/camera_projection[2, :]
-    projections_2d[1, :] = camera_projection[1, :]/camera_projection[2, :]
+    projections_2d[0, :] = camera_projection[0, :]/(camera_projection[2, :])
+    projections_2d[1, :] = camera_projection[1, :]/(camera_projection[2, :])
     return projections_2d
 
 
@@ -58,7 +59,7 @@ if __name__ == "__main__":
   
     try:
         if sys.argv[1] == "all":
-            folders = glob.glob("LINEMOD/*/")
+            folders = glob.glob("LINEMOD/*_ok/")
         elif sys.argv[1]+"/" in glob.glob("LINEMOD/*/"):
             folders = [sys.argv[1]+"/"]
         else:
@@ -96,7 +97,6 @@ if __name__ == "__main__":
         
         mesh = trimesh.load(folder + "mesh_result.ply")
         mesh2 = trimesh.load(folder + "mesh_result.ply")
-
         #mesh_siemens2 = trimesh.load("LINEMOD/siemens2/" + "mesh_result.ply")
         #mesh_siemens3 = trimesh.load("LINEMOD/siemens3/" + "mesh_result.ply")
         mesh_truth = trimesh.load("LINEMOD/siemens.ply")
@@ -162,10 +162,10 @@ if __name__ == "__main__":
             corners[:,1] = corners[:,1]/int(camera_intrinsics['height'])
 
             T = np.dot(transform, np.linalg.inv(tform_final))
+            mesh_copy.apply_scale(1)
             mesh_copy.apply_transform(T)
             filename = path_transforms + "/"+ str(i*LABEL_INTERVAL)+".npy"
             np.save(filename, T)
-            
             sample_points = mesh_copy.sample(10000)
             masks = compute_projection(sample_points,K)
             masks = masks.T
@@ -213,5 +213,6 @@ if __name__ == "__main__":
             file.write(message)
             file.close()
     print("Issues with {} images".format(count))
+    #os.rename(folder,sys.argv[1])
     os.rename(folder,sys.argv[1]+ "_ok/")
 

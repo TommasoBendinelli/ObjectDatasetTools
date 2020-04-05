@@ -46,7 +46,7 @@ objlist = {1:"siemens"}
 box = []
 #Pose estimation 
 for n in objlist:
-
+    no_Obj =[]
     rgb = path + "rgb/"
     if not os.path.exists(rgb):
         os.mkdir(rgb)
@@ -60,22 +60,32 @@ for n in objlist:
         #Go through all transoformations file 
         transform_dir =  view_list[l] + "transforms/" 
         for file in sorted(os.listdir(transform_dir)):
-          #In case the are multiple object, each pose goes into a list 
-          curr = np.load(transform_dir + file)
-          idx = file[:-4]
+            #In case the are multiple object, each pose goes into a list 
+            curr = np.load(transform_dir + file)
+            idx = file[:-4]
 
-          #convert the list to numeric values
-          columns = Obj_boxList_group.get_group(view_list[l][:-1]).reset_index(drop=True)
-          tmp = pd.to_numeric(columns.loc[int(idx),boxCoordinates])
-          values = tmp.tolist()
-          new_idx = str(l) + str(idx)
-          data = dict({"idx": int(str(l) + str(idx)), "obj_bb": values, "obj_id": n, "image_height": cam['height'], "image_width": cam['width']})
-          box.append(data)
-          try:
-              shutil.copy(ObjpytectDataTools_path + view_list[l] + "JPEGImages/" + idx + ".jpg",  path + "rgb/" + str(new_idx) + ".jpg" )
-              shutil.copy(ObjectDataTools_path + view_list[l] + "mask/" + idx + ".png",  path + "mask/" + str(new_idx) + ".png" )
-          except Exception as E:
-              pass
+            #convert the list to numeric values
+            columns = Obj_boxList_group.get_group(view_list[l][:-1]).reset_index(drop=True)
+            new_index = columns["Filename"].str.extract(r"\/([0-9]+)")[0]
+            new_index = pd.to_numeric(new_index, errors='coerce')
+            columns = columns.set_index(new_index)
+            try: 
+                tmp = pd.to_numeric(columns.loc[int(idx),boxCoordinates])
+            except:
+                print(idx)
+                print("No object in picture: " + str(file[:-4]))
+                no_Obj.append(file[:-4])
+                continue
+            values = tmp.tolist()
+            new_idx = str(l) + str(idx)
+            data = dict({"idx": int(str(l) + str(idx)), "obj_bb": values, "obj_id": n, "image_height": cam['height'], "image_width": cam['width']})
+            box.append(data)
+            try:
+                shutil.copy(ObjectDataTools_path + view_list[l] + "JPEGImages/" + idx + ".jpg",  path + "rgb/" + str(new_idx) + ".jpg" )
+                shutil.copy(ObjectDataTools_path + view_list[l] + "mask/" + idx + ".png",  path + "mask/" + str(new_idx) + ".png" )
+            except Exception as E:
+                print("This exception")
+                print(E)
 
 
 #Save yaml file

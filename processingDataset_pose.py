@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import glob
+from PIL import Image
 
 target_base_path = "/home/labuser/repos/DenseFusion/datasets/tommaso/tommaso_preprocessed/"
 linemodPath = "LINEMOD/"
@@ -91,6 +92,12 @@ for n in objlist:
                 print("No object in picture: " + str(file[:-4]))
                 no_Obj.append(file[:-4])
                 continue
+            # if np.asarray(Image.open(view_list[l] + "depth/" + file[:-4] + ".png")).max() > 20000:
+            #     idx =  str(l) + file[:-4]
+            #     print("Invalid depth in picture: " + idx)
+            #     no_Obj.append(file[:-4])
+            #     continue
+
             idx =  str(l) + file[:-4]
             values = tmp.tolist()
             data = dict({"cam_R_m2c":curr[:3,:3].tolist(), "cam_t_m2c": curr[:3,3].tolist(), "obj_bb": values, "obj_id": 1})

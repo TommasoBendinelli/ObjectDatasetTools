@@ -23,7 +23,7 @@ for classlabel,folder in enumerate(folders):
         for i in range(len(transforms)):
             message = "LINEMOD/" + folder[8:-1] + "/JPEGImages/" + str(i*LABEL_INTERVAL) + ".jpg" + "\n"
             # train on every 5th of the image
-            if i%5 == 0:
+            if i%1 == 0:
                 filetrain.write(message)
             else:
                 filetest.write(message)
