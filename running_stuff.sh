@@ -5,8 +5,9 @@ python3 register_scene.py "LINEMOD/$1"
 cp LINEMOD/$1/registeredScene.ply PointCloudProcessing/point_cloud/original/$1_original.ply
 
 #Processing Data
-source env/bin/activated
 cd PointCloudProcessing/
+echo $PWD
+source env/bin/activate
 python3 1_manual_cropping.py $1
 #python3 3_point_cloud_ICP.py $1
 python3 interactivePointCloud.py $1 "1"
