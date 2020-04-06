@@ -3,3 +3,8 @@ annotations.csv
 env/*
 lager/
 *.pyc
+media/
+SYN/Tommaso_dataset
+TESTING/
+all/
+all_ok/
